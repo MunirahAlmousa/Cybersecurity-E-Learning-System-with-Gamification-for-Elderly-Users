@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Support Messages – Admin</title>
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+/* layout */
+.support-admin-container {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 40px);
+  padding: 20px;
+}
+
+.support-users-list {
+  width: 260px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.support-users-list h3 {
+  margin-bottom: 10px;
+}
+
+.support-user-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: #f3f6fb;
+  cursor: pointer;
+}
+
+.support-user-item:hover {
+  background: #e7eef9;
+}
+
+.support-chat-area {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.support-messages-box {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.msg-row {
+  margin: 10px 0;
+}
+
+.msg-admin {
+  background: #ffe1e1;
+  padding: 12px;
+  max-width: 70%;
+  border-radius: 12px 12px 0 12px;
+}
+
+.msg-user {
+  background: #d5e8ff;
+  padding: 12px;
+  max-width: 70%;
+  border-radius: 12px 12px 12px 0;
+  margin-left: auto;
+}
+
+.msg-meta {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* message input */
+.support-input-wrapper {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.support-input-wrapper textarea {
+  flex: 1;
+  resize: none;
+  padding: 12px;
+  height: 70px;
+}
+
+.support-input-wrapper button {
+  width: 160px;
+  background: #4a6fa5;
+  color: white;
+  font-weight: 600;
+}
+</style>
+
+</head>
+
+<body>
+
+<header class="topbar">
+  <h1>Admin Panel – Support Chat</h1>
+  <nav>
+    <a href="/admin/lessons"><button>Lessons</button></a>
+    <a href="/admin/dashboard"><button>Users</button></a>
+    <a href="/admin/support"><button class="font-btn">Support Messages</button></a>
+  </nav>
+</header>
+
+<div class="support-admin-container">
+
+  <!-- USERS LIST -->
+  <div class="support-users-list">
+    <h3>Users</h3>
+    <div id="adminSupportUsers"></div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div class="support-chat-area">
+    <h3 id="chatUserName">Select a user</h3>
+
+    <div class="support-messages-box" id="chatBox">
+      <p style="color:#777">No user selected.</p>
+    </div>
+
+    <div class="support-input-wrapper">
+      <textarea id="adminSupportInput" placeholder="Write a reply..." disabled></textarea>
+      <button id="adminSupportSendBtn" disabled>Send</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let selectedUser = null;
+
+// Load all users who sent messages
+async function loadSupportUsers() {
+  const res = await fetch("/api/admin/support/users");
+  const j = await res.json();
+
+  const box = document.getElementById("adminSupportUsers");
+  box.innerHTML = "";
+
+  j.users.forEach(u => {
+    const div = document.createElement("div");
+    div.className = "support-user-item";
+    div.textContent = u.name + " (ID: " + u.id + ")";
+    div.onclick = () => openChat(u.id, u.name);
+    box.appendChild(div);
+  });
+}
+
+// Open chat with a user
+async function openChat(uid, name) {
+  selectedUser = uid;
+  document.getElementById("chatUserName").textContent =
+    "Chat with: " + name;
+
+  document.getElementById("adminSupportInput").disabled = false;
+  document.getElementById("adminSupportSendBtn").disabled = false;
+
+  await loadMessages(uid);
+}
+
+// Load chat messages
+async function loadMessages(uid) {
+  const box = document.getElementById("chatBox");
+  box.innerHTML = "<em>Loading...</em>";
+
+  const res = await fetch(`/api/admin/support/messages/${uid}`);
+  const j = await res.json();
+
+  box.innerHTML = "";
+
+  j.messages.forEach(m => {
+    const row = document.createElement("div");
+    row.className = "msg-row";
+
+    row.innerHTML = `
+      <div class="${m.from_admin ? 'msg-admin' : 'msg-user'}">${m.text}</div>
+      <div class="msg-meta">${m.from_admin ? 'Admin' : 'User'} • ${m.ts}</div>
+    `;
+
+    box.appendChild(row);
+  });
+
+  box.scrollTop = box.scrollHeight;
+}
+
+// Admin send message
+document.getElementById("adminSupportSendBtn").onclick = async () => {
+  const txt = document.getElementById("adminSupportInput").value.trim();
+  if (!txt || !selectedUser) return;
+
+  const res = await fetch(`/api/admin/support/send/${selectedUser}`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({text: txt})
+  });
+
+  const j = await res.json();
+  if (j.ok) {
+    document.getElementById("adminSupportInput").value = "";
+    await loadMessages(selectedUser);
+  }
+};
+
+// Auto-load user list
+loadSupportUsers();
+</script>
+
+</body>
+</html>

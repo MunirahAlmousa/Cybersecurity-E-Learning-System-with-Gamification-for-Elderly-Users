@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elderly Cybersecurity E-Learning (MySQL)</title>
+  <link rel="stylesheet" href="/static/style.css" />
+
+  <!-- YouTube API -->
+  <script>
+    (function(){
+      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const s=document.createElement('script');
+        s.src="https://www.youtube.com/iframe_api";
+        document.head.appendChild(s);
+      }
+    })();
+  </script>
+
+  <style>
+    /* ==== FAQ STYLES ==== */
+    .faq-container {
+        margin-top: 15px;
+    }
+    .faq-item {
+        background: #eef3fc;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .faq-item:hover {
+        background: #dde8ff;
+    }
+    .faq-question {
+        font-weight: bold;
+        font-size: 18px;
+        color: #234a91;
+    }
+    .faq-answer {
+        display: none;
+        padding-top: 8px;
+        color: #0b2545;
+        font-size: 15px;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+
+<header class="topbar">
+  <h1>🛡️ Elderly Cybersecurity E-Learning</h1>
+
+  <nav>
+    <button class="tablink" data-tab="auth">Login</button>
+    <button class="tablink" data-tab="dashboard" disabled>Dashboard</button>
+    <button class="tablink" data-tab="content" disabled>Lessons</button>
+    <button class="tablink" data-tab="quiz" disabled>Quiz</button>
+    <button class="tablink" data-tab="achievements" disabled>Achievements</button>
+    <button class="tablink" data-tab="forum" disabled>Forum</button>
+
+    <!-- FAQ inside same index (TAB) -->
+    <button class="tablink" data-tab="faq" disabled>FAQ</button>
+
+    <button class="tablink" data-tab="support" disabled>Support</button>
+
+    <!-- FONT SIZE BUTTONS -->
+    <button id="fontMinus" class="font-btn">A-</button>
+    <button id="fontPlus" class="font-btn">A+</button>
+
+    <button id="logoutBtn" class="danger" style="display:none">Log out</button>
+  </nav>
+</header>
+
+<!-- ============================= -->
+<!-- AUTH TAB -->
+<!-- ============================= -->
+<main id="auth" class="tab active">
+  <div class="card">
+    <h2>Register</h2>
+    <form id="registerForm">
+      <label>Full Name <input required name="name"></label>
+      <label>Email <input required type="email" name="email"></label>
+      <label>Phone <input name="phone"></label>
+      <label>Password
+        <input required type="password" name="password"
+               placeholder="≥10 chars, include letter + number + symbol">
+      </label>
+      <button type="submit">Create Account</button>
+    </form>
+    <p class="hint">Password must be ≥10 characters and include a letter, a number, and a special character.</p>
+  </div>
+
+  <div class="card">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label>Email or Phone <input required name="id"></label>
+      <label>Password <input required type="password" name="password"></label>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</main>
+
+<!-- ============================= -->
+<!-- DASHBOARD TAB -->
+<!-- ============================= -->
+<main id="dashboard" class="tab">
+  <div class="card">
+    <h2>Hello, <span id="userName"></span> 👋</h2>
+    <p>Your progress: <strong id="progressText">0%</strong></p>
+
+    <div class="row">
+      <div class="stat"><div id="points">0</div><small>Points</small></div>
+      <div class="stat"><div id="level">1</div><small>Level</small></div>
+      <div class="stat"><div id="badgesCount">0</div><small>Badges</small></div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================= -->
+<!-- LESSONS TAB -->
+<!-- ============================= -->
+<main id="content" class="tab">
+  <div class="card">
+    <h2>Learning Modules</h2>
+    <div id="modules"></div>
+  </div>
+
+  <div class="card" id="lessonCard" style="display:none">
+    <h3 id="lessonTitle"></h3>
+    <article id="lessonBody"></article>
+
+    <div id="videoWrap" class="video-wrap" style="display:none"></div>
+
+    <div class="controls">
+      <button id="markCompleteBtn">Mark Lesson Complete</button>
+      <button id="openQuizBtn">Take Quiz</button>
+    </div>
+  </div>
+</main>
+
+<!-- ============================= -->
+<!-- QUIZ TAB -->
+<!-- ============================= -->
+<main id="quiz" class="tab">
+  <div class="card">
+    <h2 id="quizTitle">Quiz</h2>
+    <form id="quizForm"></form>
+    <div id="quizResult"></div>
+  </div>
+</main>
+
+<!-- ============================= -->
+<!-- ACHIEVEMENTS TAB -->
+<!-- ============================= -->
+<main id="achievements" class="tab">
+  <div class="card">
+    <h2>Achievements</h2>
+    <div id="achievementsContent"><em>Loading...</em></div>
+  </div>
+</main>
+
+<!-- ============================= -->
+<!-- FORUM TAB -->
+<!-- ============================= -->
+<main id="forum" class="tab">
+  <div class="card">
+    <h2>Discussion Forum</h2>
+
+    <form id="postForm">
+      <label>Write a post:
+        <textarea required name="content" rows="3"></textarea>
+      </label>
+      <button type="submit">Post</button>
+    </form>
+
+    <div id="posts"></div>
+  </div>
+</main>
+
+<!-- ============================= -->
+<!-- FAQ TAB (NEW INSIDE PAGE) -->
+<!-- ============================= -->
+<main id="faq" class="tab">
+  <div class="card">
+    <h2>Frequently Asked Questions (FAQ)</h2>
+
+    <div class="faq-container">
+
+      <div class="faq-item" onclick="toggleFAQ(this)">
+    <div class="faq-question">How do I start watching lessons?</div>
+    <div class="faq-answer">
+        After logging in, go to the Lessons section, choose a lesson, and click the "Open" button to start learning.
+    </div>
+</div>
+
+<div class="faq-item" onclick="toggleFAQ(this)">
+    <div class="faq-question">When do I earn points and achievements?</div>
+    <div class="faq-answer">
+        You earn points automatically when you complete a lesson, finish watching a video, or pass a quiz.
+    </div>
+</div>
+
+<div class="faq-item" onclick="toggleFAQ(this)">
+    <div class="faq-question">Where can I find the quizzes?</div>
+    <div class="faq-answer">
+        After opening a lesson, click the "Take Quiz" button to access the quiz for that lesson.
+    </div>
+</div>
+
+<div class="faq-item" onclick="toggleFAQ(this)">
+    <div class="faq-question">How do I contact support?</div>
+    <div class="faq-answer">
+        Go to the Support section, write your message, and send it. The support team will reply in the same page.
+    </div>
+</div>
+
+
+    </div>
+  </div>
+</main>
+
+<!-- ============================= -->
+<!-- SUPPORT TAB -->
+<!-- ============================= -->
+<main id="support" class="tab">
+  <div class="card">
+    <h2>Need Help?</h2>
+
+    <div class="support-wrapper">
+      <div class="support-email">
+        For additional help, email us:  
+        <a href="mailto:support@example.com">support@example.com</a>
+      </div>
+
+      <div class="support-messages" id="supportMessages">
+        <em>Loading your support messages…</em>
+      </div>
+
+      <div class="support-actions">
+        <label>Write a message:
+          <textarea id="supportInput" rows="3" placeholder="Describe your issue…"></textarea>
+        </label>
+        <button id="supportSendBtn">Send Message</button>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+
+<script>
+function toggleFAQ(el) {
+    const ans = el.querySelector(".faq-answer");
+    ans.style.display = ans.style.display === "block" ? "none" : "block";
+}
+</script>
+
+
+<!-- ============================= -->
+<!-- POPUP ACHIEVEMENTS -->
+<!-- ============================= -->
+<div id="achievementPopup" class="popup" style="display:none">
+  <div class="popup-inner pink">
+    <div class="popup-title">Good job!</div>
+    <div class="popup-body">
+      🏅 Achievement Unlocked: <span id="popupBody">Achievement Name</span>
+    </div>
+    <audio id="achSound" src="/static/achievement.wav"></audio>
+  </div>
+</div>
+
+<footer>
+  <small>© 2025 Cybersecurity E-Learning – MySQL Version</small>
+</footer>
+
+<script src="/static/app.js"></script>
+
+<!-- FAQ Script -->
+<script>
+function toggleFAQ(el){
+  const ans = el.querySelector('.faq-answer');
+  ans.style.display = ans.style.display === 'block' ? 'none' : 'block';
+}
+</script>
+
+</body>
+</html>
