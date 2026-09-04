@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Lessons Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9fbfd;
+            margin: 0;
+        }
+
+        header {
+            background: #c8d9f1;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            gap: 10px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #dce9f8;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add {
+            background: #5aa0e6;
+            color: white;
+        }
+
+        .edit {
+            background: #8ac926;
+            color: white;
+        }
+
+        .delete {
+            background: #ff595e;
+            color: white;
+        }
+
+        .logout {
+            background: #86b7f3;
+            color: white;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .logout:hover {
+            background: #6fa9f0;
+        }
+
+        .users-btn {
+            background: #f4a9d8;
+            color: #333;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>📚 Manage Lessons</h1>
+        <div class="header-actions">
+            <button class="users-btn" onclick="window.location.href='/admin/dashboard'">👥 User Dashboard</button>
+
+            <button class="support-btn" onclick="window.location.href='/admin/support'">💬 Support Messages</button>
+
+            <button class="logout" onclick="logout()">🚪 Logout</button>
+        </div>
+
+    </header>
+
+    <div style="margin-top:20px;">
+        <button class="add" onclick="openAddModal()">➕ Add New Lesson</button>
+    </div>
+
+    <table id="lessonsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Module</th>
+                <th>Video</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        async function loadLessons() {
+            const res = await fetch("/api/admin/lessons");
+            const data = await res.json();
+            if (!data.ok) return alert("Failed to load lessons");
+            const tbody = document.querySelector("#lessonsTable tbody");
+            tbody.innerHTML = "";
+            for (const l of data.items) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+          <td>${l.id}</td>
+          <td>${l.title}</td>
+          <td>${l.module}</td>
+          <td><a href="${l.video}" target="_blank">Watch</a></td>
+          <td>
+            <button class="edit" onclick="editLesson(${l.id})">Edit</button>
+            <button class="delete" onclick="deleteLesson(${l.id})">Delete</button>
+          </td>`;
+                tbody.appendChild(row);
+            }
+        }
+
+        async function deleteLesson(id) {
+            if (!confirm("Delete this lesson?")) return;
+            await fetch("/api/admin/lessons/" + id, { method: "DELETE" });
+            loadLessons();
+        }
+
+        async function openAddModal() {
+            const title = prompt("Title:");
+            const module = prompt("Module:");
+            const body = prompt("Body:");
+            const video = prompt("YouTube Link:");
+            if (!title || !module || !body) return;
+            await fetch("/api/admin/lessons", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, module, body, video })
+            });
+            loadLessons();
+        }
+
+        async function editLesson(id) {
+            const title = prompt("New title:");
+            const module = prompt("New module:");
+            const body = prompt("New body:");
+            const video = prompt("New video link:");
+            await fetch("/api/admin/lessons/" + id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, module, body, video })
+            });
+            loadLessons();
+        }
+
+        async function logout() {
+            if (!confirm("Are you sure you want to logout?")) return;
+            await fetch("/api/logout", { method: "POST" });
+            alert("You have logged out successfully!");
+            window.location.href = "/";
+        }
+
+        loadLessons();
+    </script>
+</body>
+
+</html>

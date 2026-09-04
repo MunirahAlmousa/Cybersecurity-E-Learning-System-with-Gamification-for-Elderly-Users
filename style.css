@@ -1,0 +1,311 @@
+/* ============================================
+   GLOBAL
+============================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  background: #f5f7fa;
+  color: #333;
+  padding-bottom: 50px;
+}
+
+/* ============================================
+   HEADER
+============================================ */
+.topbar {
+  background: #4a6fa5;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.topbar h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.topbar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.topbar button {
+  padding: 7px 15px;
+  border: none;
+  background: #dbe6f6;
+  color: #1d3f72;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.topbar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.topbar .danger {
+  background: #e85b68;
+  color: #fff;
+}
+
+/* FONT SIZE BUTTONS */
+.font-btn {
+  background: #fff8c9;
+  color: #333 !important;
+  border: 1px solid #c9b04a;
+}
+
+.font-btn:hover {
+  background: #fff3a2;
+}
+
+/* ============================================
+   TABS
+============================================ */
+.tab {
+  display: none;
+  padding: 20px;
+}
+.tab.active {
+  display: block;
+}
+
+/* ============================================
+   CARDS
+============================================ */
+.card {
+  background: #ffffff;
+  padding: 20px;
+  margin: 15px auto;
+  width: min(900px, 95%);
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.card h2,
+.card h3 {
+  margin-bottom: 15px;
+}
+
+/* ============================================
+   FORMS
+============================================ */
+form label {
+  display: block;
+  font-weight: 600;
+  margin: 8px 0 4px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #cfd3d9;
+  border-radius: 6px;
+}
+
+button {
+  background: #4a6fa5;
+  color: #fff;
+  padding: 9px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover {
+  background: #3a5b85;
+}
+
+.hint {
+  color: #777;
+  font-size: 0.85rem;
+  margin-top: -5px;
+}
+
+/* ============================================
+   DASHBOARD STATS
+============================================ */
+.row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  background: #edf3fc;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  flex: 1;
+  min-width: 120px;
+}
+
+.stat div {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* ============================================
+   LESSONS
+============================================ */
+.module {
+  margin-bottom: 20px;
+}
+
+.lesson {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+}
+
+.lesson strong {
+  font-size: 1rem;
+}
+
+.video-wrap {
+  margin: 15px 0;
+}
+
+/* ============================================
+   QUIZ
+============================================ */
+.question-block {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f6f9fe;
+  border-radius: 10px;
+}
+
+.question-block h4 {
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   ACHIEVEMENTS
+============================================ */
+#achievementsContent ul {
+  margin-top: 15px;
+  list-style: none;
+}
+
+#achievementsContent li {
+  padding: 10px 0;
+  border-bottom: 1px solid #ececec;
+}
+
+/* ============================================
+   FORUM
+============================================ */
+#posts .card {
+  margin-bottom: 15px;
+}
+
+/* ============================================
+   SUPPORT CHAT
+============================================ */
+.support-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.support-email {
+  background: #fff7cd;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.support-messages {
+  background: #f3f6fa;
+  padding: 15px;
+  border-radius: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.support-msg {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 85%;
+}
+
+.support-msg.user {
+  background: #d2e7ff;
+  margin-left: auto;
+}
+
+.support-msg.admin {
+  background: #ffe6e6;
+  margin-right: auto;
+}
+
+.support-meta {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* ============================================
+   POPUP (Achievement)
+============================================ */
+.popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+}
+
+.popup-inner {
+  background: #fff5fb;
+  padding: 25px 35px;
+  border-radius: 12px;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.25);
+}
+
+.popup-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.popup-body {
+  font-size: 1rem;
+}
+
+audio {
+  display: none;
+}
+
+/* ============================================
+   FOOTER
+============================================ */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  color: #777;
+  font-size: 0.85rem;
+}
